@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0099cc"
-    tools:context=".FullscreenActivity" >
+    tools:context=".MainActivity" >
 
     <!--
          The primary full-screen view. This can be replaced with whatever view
@@ -49,6 +49,15 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/dummy_button" />
+            
+            <Button
+		        android:id="@+id/discover_button"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_below="@+id/textView1"
+		        android:layout_centerHorizontal="true"
+		        android:layout_marginTop="156dp"
+		        android:text="Button" />
         </LinearLayout>
     </FrameLayout>
 
