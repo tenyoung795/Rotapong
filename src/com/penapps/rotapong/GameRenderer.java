@@ -15,16 +15,35 @@ public class GameRenderer implements Renderer {
 	
 	private Context mContext;
 	private Ball mBall;
+	private float mBallZ;
+	private boolean mBallDir;
 
 	public GameRenderer(Context context)
 	{
 		mContext = context;
+		mBallZ = -20.0f;
+		mBallDir = true;
 	}
 	
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);	
+
+		gl.glLoadIdentity();
+		gl.glTranslatef(0.0f, 0.0f, mBallZ);
 		mBall.draw(gl);
+		if (mBallDir)
+		{
+			mBallZ++;
+			if (mBallZ == -10.0f)
+				mBallDir = false;
+		}
+		else
+		{
+			mBallZ--;
+			if (mBallZ == -20.0f)
+				mBallDir = true;
+		}
 	}
 
 	@Override
@@ -55,6 +74,8 @@ public class GameRenderer implements Renderer {
 		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST); 
 		
         mBall = new Ball(gl, mContext);
+        mBallZ = -20.0f;
+        mBallDir = true;
 	}
 
 }

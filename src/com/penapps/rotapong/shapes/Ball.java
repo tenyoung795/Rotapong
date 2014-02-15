@@ -25,9 +25,27 @@ public class Ball implements Shape {
 	private int[] mTexturePointer;
 	private int[] mCropWorkspace;
 	
+	private static final FloatBuffer VERTICES = Buffers.wrap(new float[] {
+        -1.0f, -1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f,
+        1.0f, 1.0f, 0.0f
+	});
+	
+	private static final FloatBuffer TEXTURE = Buffers.wrap(new float[]{
+		0.0f, 0.0f, 
+		0.0f, 1.0f, 
+		1.0f, 0.0f, 
+		1.0f, 1.0f
+	});
+	
+	private static final ByteBuffer INDICES = Buffers.wrap(new byte[]{
+		0, 1, 3, 0, 3, 2
+	});
+
 	public Ball(GL10 gl, Context context)
 	{	
-		InputStream is = context.getResources().openRawResource(R.drawable.ic_launcher);
+		InputStream is = context.getResources().openRawResource(R.drawable.ball);
 		Bitmap bitmap = null;
 		try {
 			bitmap = BitmapFactory.decodeStream(is);
@@ -69,7 +87,20 @@ public class Ball implements Shape {
 	@Override
 	public void draw(GL10 gl) {
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, mTexturePointer[0]);
-		((GL11Ext) gl).glDrawTexfOES(500.0f, 500.0f, 0, 100.0f, 100.0f);	
+		
+		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+
+		gl.glFrontFace(GL10.GL_CCW);
+		
+		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, VERTICES);
+		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, TEXTURE);
+		
+		//gl.glDrawElements(GL10.GL_TRIANGLES, INDICES.capacity(), GL10.GL_UNSIGNED_BYTE, INDICES);
+		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
+		
+		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
+		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 	}
 
 }
