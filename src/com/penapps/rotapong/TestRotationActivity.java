@@ -21,7 +21,7 @@ public class TestRotationActivity extends Activity implements SensorEventListene
 	private float[] mGravity, mGeomagnetic, mOrientation;
 	
 	private static final int ROTATION_SIZE = 9;
-	private float[] mRotation;
+	private float[] mTempRotation, mRotation;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +38,7 @@ public class TestRotationActivity extends Activity implements SensorEventListene
 		mGravity[0] = mGeomagnetic[0] = Float.NaN;
 		mOrientation = new float[3];
 		
+		mTempRotation = new float[ROTATION_SIZE];
 		mRotation = new float[ROTATION_SIZE];
 	}
 	
@@ -84,8 +85,10 @@ public class TestRotationActivity extends Activity implements SensorEventListene
 		}
 		System.arraycopy(event.values, 0, array, 0, 3);
 		if (!(Float.isNaN(mGravity[0]) || Float.isNaN(mGeomagnetic[0]))
-			&& SensorManager.getRotationMatrix(mRotation, null, mGravity, mGeomagnetic))
+			&& SensorManager.getRotationMatrix(mTempRotation, null, mGravity, mGeomagnetic))
         {
+			// Warp coordinate system to ease conversion to game world
+			SensorManager.remapCoordinateSystem(mTempRotation, SensorManager.AXIS_Y, SensorManager.AXIS_Z, mRotation);
 			SensorManager.getOrientation(mRotation, mOrientation);
 			Log.i(TAG, "Orientation vector in degrees: z: " + (int)Math.toDegrees(mOrientation[0])
 				+ " x: " + (int)Math.toDegrees(mOrientation[1])
