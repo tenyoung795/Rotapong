@@ -7,9 +7,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.util.FloatMath;
 import android.util.Log;
 import android.view.Menu;
+import android.widget.TextView;
 
 public class TestRotationActivity extends Activity implements SensorEventListener {
 	
@@ -22,6 +22,8 @@ public class TestRotationActivity extends Activity implements SensorEventListene
 	
 	private static final int ROTATION_SIZE = 9;
 	private float[] mTempRotation, mRotation;
+	
+	private TextView mTextView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,8 @@ public class TestRotationActivity extends Activity implements SensorEventListene
 		
 		mTempRotation = new float[ROTATION_SIZE];
 		mRotation = new float[ROTATION_SIZE];
+		
+		mTextView = (TextView)findViewById(R.id.text);
 	}
 	
 	@Override
@@ -90,10 +94,11 @@ public class TestRotationActivity extends Activity implements SensorEventListene
 			// Warp coordinate system to ease conversion to game world
 			SensorManager.remapCoordinateSystem(mTempRotation, SensorManager.AXIS_Y, SensorManager.AXIS_Z, mRotation);
 			SensorManager.getOrientation(mRotation, mOrientation);
-			Log.i(TAG, "Orientation vector in degrees: z: " + (int)Math.toDegrees(mOrientation[0])
+			String msg = "Orientation vector in degrees: z: " + (int)Math.toDegrees(mOrientation[0])
 				+ " x: " + (int)Math.toDegrees(mOrientation[1])
-				+ " y: " + (int)Math.toDegrees(mOrientation[2])
-            );
+				+ " y: " + (int)Math.toDegrees(mOrientation[2]);
+			mTextView.setText(msg);
+			Log.i(TAG, msg);
         }
 	}
 
