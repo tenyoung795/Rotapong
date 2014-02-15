@@ -73,38 +73,6 @@ public class OtherPaddle implements Shape {
         0.0f, -1.0f, 0.0f,
     });
 
-	private static final FloatBuffer TEXTURE = Buffers.wrap(new float[] {
-        0.0f, 0.0f, 
-        0.0f, 1.0f, 
-        1.0f, 0.0f, 
-        1.0f, 1.0f,
-
-        0.0f, 0.0f,
-        0.0f, 1.0f, 
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-
-        0.0f, 0.0f, 
-        0.0f, 1.0f, 
-        1.0f, 0.0f, 
-        1.0f, 1.0f,
-
-        0.0f, 0.0f, 
-        0.0f, 1.0f, 
-        1.0f, 0.0f, 
-        1.0f, 1.0f,
-
-        0.0f, 0.0f, 
-        0.0f, 1.0f, 
-        1.0f, 0.0f, 
-        1.0f, 1.0f,
-
-        0.0f, 0.0f, 
-        0.0f, 1.0f, 
-        1.0f, 0.0f, 
-        1.0f, 1.0f, 
-    });
-
 	private static final ByteBuffer INDICES = Buffers.wrap(new byte[] {
         0, 1, 3, 0, 3, 2,
         4, 5, 7, 4, 7, 6,
@@ -117,20 +85,18 @@ public class OtherPaddle implements Shape {
 	@Override
 	public void draw(GL10 gl) {
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-		//gl.glEnableClientState(GL10.GL_NORMAL_ARRAY);
+		gl.glEnableClientState(GL10.GL_NORMAL_ARRAY);
 
 		gl.glFrontFace(GL10.GL_CCW);
 		
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, VERTICES);
-		//gl.glNormalPointer(GL10.GL_FLOAT, 0, NORMAL);
+		gl.glNormalPointer(GL10.GL_FLOAT, 0, NORMAL);
 		
 		gl.glDisable(GL10.GL_TEXTURE_2D);
-		gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		//gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 		gl.glDrawElements(GL10.GL_TRIANGLES, INDICES.capacity(), GL10.GL_UNSIGNED_BYTE, INDICES);
 		
 		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
-		//gl.glDisableClientState(GL10.GL_NORMAL_ARRAY);
+		gl.glDisableClientState(GL10.GL_NORMAL_ARRAY);
 	}
 
 }
