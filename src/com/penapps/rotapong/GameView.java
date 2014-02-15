@@ -5,9 +5,9 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
 public class GameView extends GLSurfaceView {
-
-	public GameView(Context context, AttributeSet attrs) {
-		super(context, attrs);
+	
+	public GameView(Context context) {
+		super(context);
 		setRenderer(new GameRenderer());
 	}
 
