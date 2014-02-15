@@ -92,6 +92,7 @@ public class Ball implements Shape {
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, VERTICES);
 		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, TEXTURE);
 		
+		gl.glEnable(GL10.GL_TEXTURE_2D);
 		//gl.glDrawElements(GL10.GL_TRIANGLES, INDICES.capacity(), GL10.GL_UNSIGNED_BYTE, INDICES);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 		
