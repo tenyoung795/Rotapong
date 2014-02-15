@@ -119,7 +119,7 @@ public class TestRotationActivity extends Activity implements SensorEventListene
 			if (!calibrated){
 				calibrationZ = mOrientation[0];
 				calibrated = true;
-			}			
+			}
         }
 	}
 }

@@ -2,7 +2,6 @@ package com.penapps.rotapong.shapes;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -24,6 +23,8 @@ public class Ball implements Shape {
 	
 	private int[] mTexturePointer;
 	private int[] mCropWorkspace;
+	public float x, y, z;
+	public boolean dir;
 	
 	private static final FloatBuffer VERTICES = Buffers.wrap(new float[] {
         -1.0f, -1.0f, 0.0f,
@@ -39,8 +40,12 @@ public class Ball implements Shape {
 		1.0f, 1.0f
 	});
 	
-	public Ball(GL10 gl, Context context)
+	public Ball(GL10 gl, Context context, boolean dir, float x, float y, float z)
 	{	
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.dir = dir;
 		InputStream is = context.getResources().openRawResource(R.drawable.ball);
 		Bitmap bitmap = null;
 		try {

@@ -8,6 +8,8 @@ import javax.microedition.khronos.opengles.GL10;
 import com.penapps.rotapong.util.Buffers;
 
 public class OtherPaddle implements Shape {
+	public float x;
+	public boolean dir;
 	
 	private static final FloatBuffer VERTICES = Buffers.wrap(new float[] {
         -0.25f, -1.0f, 0.25f,
@@ -81,6 +83,11 @@ public class OtherPaddle implements Shape {
         16, 17, 19, 16, 19, 18, 
         20, 21, 23, 20, 23, 22, 
     });
+	
+	public OtherPaddle(float x, boolean dir) {
+		this.x = x;
+		this.dir = dir;
+	}
 
 	@Override
 	public void draw(GL10 gl) {

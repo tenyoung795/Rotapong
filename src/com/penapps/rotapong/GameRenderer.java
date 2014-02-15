@@ -9,8 +9,7 @@ import android.content.Context;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
 
-import com.penapps.rotapong.shapes.Ball;
-import com.penapps.rotapong.shapes.OtherPaddle;
+import com.penapps.rotapong.shapes.Camera;
 import com.penapps.rotapong.util.Buffers;
 
 public class GameRenderer implements Renderer {
@@ -20,22 +19,13 @@ public class GameRenderer implements Renderer {
 	});
 	
 	private Context mContext;
-	private Ball mBall;
-	private OtherPaddle mOtherPaddle;
-	
-	private float mBallZ;
-	private boolean mBallDir;
-
-	private float mOtherPaddleX;
-	private boolean mOtherPaddleDir;
-	
-	private float mCameraY;
-	private boolean mCameraDir;
+	private Camera mCamera;
+	private Game game;
 
 	public GameRenderer(Context context)
 	{
 		mContext = context;
-		mCameraY = 0.0f;
+		mCamera = new Camera(false, 0.0f, 0.0f, 0.0f);
 	}
 	
 	@Override
@@ -43,55 +33,55 @@ public class GameRenderer implements Renderer {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);	
 		
 		gl.glLoadIdentity();
-		gl.glTranslatef(0.0f, mCameraY, 0.0f);
-		if (mCameraDir)
+		gl.glTranslatef(0.0f, mCamera.y, 0.0f);
+		if (mCamera.dir)
 		{
-			mCameraY += 0.03125f;
-			if (mCameraY == 1.0f)
-				mCameraDir = false;
+			mCamera.y += 0.03125f;
+			if (mCamera.y == 1.0f)
+				mCamera.dir = false;
 		}
 		else
 		{
-			mCameraY -= 0.03125f;
-			if (mCameraY == -1.0f)
-				mCameraDir = true;
+			mCamera.y -= 0.03125f;
+			if (mCamera.y == -1.0f)
+				mCamera.dir = true;
 		}
 		
 		gl.glPushMatrix();
-		gl.glTranslatef(mOtherPaddleX, 0.0f, -5.0f);
+		gl.glTranslatef(game.otherPaddle.x, 0.0f, -5.0f);
 		gl.glScalef(0.75f, 0.75f, 0.75f);
-		mOtherPaddle.draw(gl);
+		game.otherPaddle.draw(gl);
 		gl.glPopMatrix();
-		if (mOtherPaddleDir)
+		if (game.otherPaddle.dir)
 		{
-			mOtherPaddleX += 0.0625f;
-			
-			if (mOtherPaddleX == 1.0f)
-				mOtherPaddleDir = false;
+			game.otherPaddle.x += 0.0625f;
+			if (game.otherPaddle.x == 1.0f)
+				game.otherPaddle.dir = false;
 		}
 		else
+			
 		{
-			mOtherPaddleX -= 0.0625f;
-			if (mOtherPaddleX == -1.0f)
-				mOtherPaddleDir = true;
+			game.otherPaddle.x -= 0.0625f;
+			if (game.otherPaddle.x == -1.0f)
+				game.otherPaddle.dir = true;
 		}
 		
 		gl.glPushMatrix();
-		gl.glTranslatef(0.0f, 0.0f, mBallZ);
+		gl.glTranslatef(0.0f, 0.0f, game.ball.z);
 		gl.glScalef(0.125f, 0.125f, 0.125f);
-		mBall.draw(gl);
+		game.ball.draw(gl);
 		gl.glPopMatrix();
-		if (mBallDir)
+		if (game.ball.dir)
 		{
-			mBallZ += 0.0625f;
-			if (mBallZ == -2.0f)
-				mBallDir = false;
+			game.ball.z += 0.0625f;
+			if (game.ball.z == -2.0f)
+				game.ball.dir = false;
 		}
 		else
 		{
-			mBallZ -= 0.0625f;
-			if (mBallZ == -4.0f)
-				mBallDir = true;
+			game.ball.z -= 0.0625f;
+			if (game.ball.z == -4.0f)
+				game.ball.dir = true;
 		}
 	}
 
@@ -124,13 +114,7 @@ public class GameRenderer implements Renderer {
 		
 		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST); 
 		
-        mBall = new Ball(gl, mContext);
-        mBallZ = -3.0f;
-        mBallDir = true;
-        
-        mOtherPaddle = new OtherPaddle();
-        mOtherPaddleX = 0.0f;
-        mOtherPaddleDir = true;
+		game = new Game(gl, mContext);
 	}
 
 }
