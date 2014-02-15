@@ -1,18 +1,30 @@
 package com.penapps.rotapong;
 
+import java.io.IOException;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import android.content.Context;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
 
-public class GameRenderer implements Renderer {
+import com.penapps.rotapong.shapes.Ball;
 
+public class GameRenderer implements Renderer {
+	
+	private Context mContext;
+	private Ball mBall;
+
+	public GameRenderer(Context context)
+	{
+		mContext = context;
+	}
+	
 	@Override
 	public void onDrawFrame(GL10 gl) {
-		//Clear Screen And Depth Buffer
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);	
-		gl.glLoadIdentity();					//Reset The Current Modelview Matrix
+		mBall.draw(gl);
 	}
 
 	@Override
@@ -35,9 +47,14 @@ public class GameRenderer implements Renderer {
 		gl.glClearDepthf(1.0f); 					//Depth Buffer Setup
 		gl.glEnable(GL10.GL_DEPTH_TEST); 			//Enables Depth Testing
 		gl.glDepthFunc(GL10.GL_LEQUAL); 			//The Type Of Depth Testing To Do
+		gl.glEnable(GL10.GL_TEXTURE_2D);
+		gl.glEnable(GL10.GL_BLEND);
+		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		
 		//Really Nice Perspective Calculations
 		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST); 
+		
+        mBall = new Ball(gl, mContext);
 	}
 
 }

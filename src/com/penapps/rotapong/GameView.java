@@ -8,7 +8,7 @@ public class GameView extends GLSurfaceView {
 	
 	public GameView(Context context) {
 		super(context);
-		setRenderer(new GameRenderer());
+		setRenderer(new GameRenderer(this.getContext()));
 	}
 
 }
