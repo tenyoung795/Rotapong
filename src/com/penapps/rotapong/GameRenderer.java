@@ -33,6 +33,7 @@ public class GameRenderer implements Renderer {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);	
 		
 		gl.glLoadIdentity();
+		/*
 		gl.glTranslatef(0.0f, mCamera.y, 0.0f);
 		if (mCamera.dir)
 		{
@@ -46,12 +47,20 @@ public class GameRenderer implements Renderer {
 			if (mCamera.y == -1.0f)
 				mCamera.dir = true;
 		}
+		*/
 		
 		gl.glPushMatrix();
 		gl.glTranslatef(game.otherPaddle.x, 0.0f, -5.0f);
 		gl.glScalef(0.75f, 0.75f, 0.75f);
 		game.otherPaddle.draw(gl);
 		gl.glPopMatrix();
+		
+		gl.glPushMatrix();
+		gl.glScalef(1.0f, 1.0f, 1.0f);
+		gl.glTranslatef(game.paddle.x, game.paddle.y, -5.0f);
+		game.paddle.draw(gl);
+		gl.glPopMatrix();
+		
 		if (game.otherPaddle.dir)
 		{
 			game.otherPaddle.x += 0.0625f;
@@ -115,6 +124,16 @@ public class GameRenderer implements Renderer {
 		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST); 
 		
 		game = new Game(gl, mContext);
+	}
+
+	public void updatePaddleZ(int newZ) {
+		game.paddle.x = (float) newZ / 40;
+		return;
+	}
+	
+	public void updatePaddleY(int newY){
+		game.paddle.y = (float) newY / 40;
+		return;
 	}
 
 }

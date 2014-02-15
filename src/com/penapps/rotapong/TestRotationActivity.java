@@ -6,6 +6,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.opengl.GLSurfaceView.Renderer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -29,6 +30,7 @@ public class TestRotationActivity extends Activity implements SensorEventListene
 	private Button calibrate;
 	private boolean calibrated = true;
 	private float calibrationZ = 0.0f;
+	private int prevZ, prevY = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
