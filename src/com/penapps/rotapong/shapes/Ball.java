@@ -39,10 +39,6 @@ public class Ball implements Shape {
 		1.0f, 1.0f
 	});
 	
-	private static final ByteBuffer INDICES = Buffers.wrap(new byte[]{
-		0, 1, 3, 0, 3, 2
-	});
-
 	public Ball(GL10 gl, Context context)
 	{	
 		InputStream is = context.getResources().openRawResource(R.drawable.ball);
