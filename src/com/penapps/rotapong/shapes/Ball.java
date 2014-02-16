@@ -43,7 +43,7 @@ public class Ball implements Shape {
 		1.0f, 1.0f
 	});
 	
-	public Ball(GL10 gl, Context context, float x, float y, float z)
+	public Ball(float x, float y, float z)
 	{	
 		this.x = x;
 		this.y = y;
@@ -58,7 +58,29 @@ public class Ball implements Shape {
 			this.xDir = true;
 		if (random.nextInt(1) == 0)
 			this.yDir = true;
+	}
+
+	@Override
+	public void draw(GL10 gl) {
+		gl.glBindTexture(GL10.GL_TEXTURE_2D, mTexturePointer[0]);
 		
+		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+
+		gl.glFrontFace(GL10.GL_CCW);
+		
+		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, VERTICES);
+		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, TEXTURE);
+		
+		gl.glEnable(GL10.GL_TEXTURE_2D);
+		//gl.glDrawElements(GL10.GL_TRIANGLES, INDICES.capacity(), GL10.GL_UNSIGNED_BYTE, INDICES);
+		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
+		
+		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
+		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+	}
+
+	public void createResources(GL10 gl, Context context) {
 		InputStream is = context.getResources().openRawResource(R.drawable.ball);
 		Bitmap bitmap = null;
 		try {
@@ -97,27 +119,6 @@ public class Ball implements Shape {
 		{
 			throw new RuntimeException("GL Error " + error);
 		}
-		
-	}
-
-	@Override
-	public void draw(GL10 gl) {
-		gl.glBindTexture(GL10.GL_TEXTURE_2D, mTexturePointer[0]);
-		
-		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-
-		gl.glFrontFace(GL10.GL_CCW);
-		
-		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, VERTICES);
-		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, TEXTURE);
-		
-		gl.glEnable(GL10.GL_TEXTURE_2D);
-		//gl.glDrawElements(GL10.GL_TRIANGLES, INDICES.capacity(), GL10.GL_UNSIGNED_BYTE, INDICES);
-		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
-		
-		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
-		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 	}
 
 }

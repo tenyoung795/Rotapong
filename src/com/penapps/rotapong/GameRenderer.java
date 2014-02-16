@@ -22,92 +22,38 @@ public class GameRenderer implements Renderer {
 
 	private Context mContext;
 	private Camera mCamera;
-	private Game game;
-	private InetAddress mServer;
-	private boolean mIsServer;
+	private Game mGame;
 	
-	public GameRenderer(Context context, InetAddress server, boolean isServer) {
+	public GameRenderer(Context context, Game game) {
 		mContext = context;
 		mCamera = new Camera(false, 0.0f, 0.0f, 0.0f);
-		mServer = server;
-		mIsServer = isServer;
+		mGame = game;
 	}
 
 	@Override
 	public void onDrawFrame(GL10 gl) {
-		game.step();
+		mGame.step();
 	    
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-
 		gl.glLoadIdentity();
-		/*
-		 * gl.glTranslatef(0.0f, mCamera.y, 0.0f); if (mCamera.dir) { mCamera.y
-		 * += 0.03125f; if (mCamera.y == 1.0f) mCamera.dir = false; } else {
-		 * mCamera.y -= 0.03125f; if (mCamera.y == -1.0f) mCamera.dir = true; }
-		 */
 
 		gl.glPushMatrix();
-		gl.glTranslatef(game.otherPaddle.x, game.otherPaddle.y, -10.0f);
+		gl.glTranslatef(mGame.otherPaddle.x, mGame.otherPaddle.y, -10.0f);
 		gl.glScalef(0.75f, 0.75f, 0.75f);
-		game.otherPaddle.draw(gl);
+		mGame.otherPaddle.draw(gl);
 		gl.glPopMatrix();
 
 		gl.glPushMatrix();
-		gl.glTranslatef(game.paddle.x, game.paddle.y, -5.0f);
+		gl.glTranslatef(mGame.paddle.x, mGame.paddle.y, -5.0f);
 		gl.glScalef(0.75f, 0.75f, 0.75f);
-		game.paddle.draw(gl);
+		mGame.paddle.draw(gl);
 		gl.glPopMatrix();
 
 		gl.glPushMatrix();
-		gl.glTranslatef(game.ball.x, game.ball.y, game.ball.z);
+		gl.glTranslatef(mGame.ball.x, mGame.ball.y, mGame.ball.z);
 		gl.glScalef(0.125f, 0.125f, 0.125f);
-		game.ball.draw(gl);
+		mGame.ball.draw(gl);
 		gl.glPopMatrix();
-
-		moveBall();
-
-	}
-
-	public void moveBall() {
-		if (game.ball.zDir) {
-			game.ball.z += game.ball.zSpeed;
-			if (game.ball.z >= -6f) {
-				checkLose();
-				game.bounceCount++;
-				game.ball.zDir = false;
-			}
-		} else {
-			game.ball.z -= game.ball.zSpeed;
-			if (game.ball.z <= -10.0f) {
-				game.bounceCount++;
-				game.ball.zDir = true;
-			}
-		}
-		if (game.ball.xDir){
-			game.ball.x += game.ball.xSpeed;
-			if (game.ball.x >= 1.75f)
-				game.ball.xDir = false;
-		} else {
-			game.ball.x -= game.ball.xSpeed;
-			if (game.ball.x <= -1.75f)
-				game.ball.xDir = true;
-		}
-		if (game.ball.yDir){
-			game.ball.y += game.ball.ySpeed;
-			if (game.ball.y >= 1.75f)
-				game.ball.yDir = false;
-		} else {
-			game.ball.y -= game.ball.ySpeed;
-			if (game.ball.y <= -1.75f)
-				game.ball.yDir = true;
-		}
-		
-		if (game.bounceCount % 5 == 0 && game.bounceCount != 0){
-			//game.ball.xSpeed += (float) Math.pow(2, ((int)(Math.random() * ((8 - 5) + 1) + 5)) * -1);
-			//game.ball.ySpeed += (float) Math.pow(2, ((int)(Math.random() * ((8 - 5) + 1) + 5)) * -1);
-			//Log.i("TAG", game.ball.xSpeed + " " + game.ball.ySpeed);
-		}
-		
 	}
 
 	@Override
@@ -140,38 +86,7 @@ public class GameRenderer implements Renderer {
 
 		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);
 
-		game = new Game(gl, mContext, mServer, mIsServer);
+		mGame.createResources(gl, mContext);
 	}
 
-	public void checkLose() {
-		if (game.ball.zDir) {
-			if (game.ball.x + .5f < game.paddle.x){
-				Log.d("TAG", game.ball.x + ", " + game.ball.y + " " + game.paddle.x + ", " + game.paddle.y);
-			}
-			else if (game.ball.x > game.paddle.x + 1.0f){
-				Log.d("TAG", game.ball.x + ", " + game.ball.y + " " + game.paddle.x + ", " + game.paddle.y);
-			}
-			else if (game.ball.y > game.paddle.y + 1.5f){
-				Log.d("TAG", game.ball.x + ", " + game.ball.y + " " + game.paddle.x + ", " + game.paddle.y);
-			}
-			else if (game.ball.y + .1f < game.paddle.y){
-				Log.d("TAG", game.ball.x + ", " + game.ball.y + " " + game.paddle.x + ", " + game.paddle.y);
-			}
-			// tell other device if this guy loses.
-		}
-		return;
-	}
-
-	public void updatePaddleZ(int newZ) {
-		game.paddle.x = ((int) (newZ / 5)) * 0.1f;
-	}
-
-	public void updatePaddleY(int newY) {
-		game.paddle.y = (float) ((newY / 4) * 0.1f);
-	}
-
-	public void updateOtherPaddle(float newZ, float newY) {
-		game.otherPaddle.x = newZ;
-		game.otherPaddle.y = newY;
-	}
 }

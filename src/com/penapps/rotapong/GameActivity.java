@@ -21,7 +21,7 @@ import android.widget.Button;
 
 public class GameActivity extends Activity implements SensorEventListener{
 
-	public static final String TAG = "GameActivity";
+	public static final String TAG = GameActivity.class.getSimpleName();
 	public static final String SERVER = "com.penapps.rotapong.SERVER";
 	public static final String IS_SERVER = "com.penapps.rotapong.IS_SERVER";
 
@@ -38,6 +38,7 @@ public class GameActivity extends Activity implements SensorEventListener{
 	private float calibrationZ = 0.0f;
 	
 	private GLSurfaceView view;
+	private Game mGame;
 	private GameRenderer renderer;
 	
 	private int prevZ, prevY = 0;
@@ -51,13 +52,14 @@ public class GameActivity extends Activity implements SensorEventListener{
 		view.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
 		view.getHolder().setFormat(PixelFormat.RGBA_8888);
 		
-		calibrate = new Button(view.getContext());
+		calibrate = new Button(this);
 		calibrate.setText("Calibrate me!");
 		
 		Intent intent = getIntent();
 		InetAddress address = (InetAddress)intent.getSerializableExtra(SERVER);
 		boolean isServer = intent.getBooleanExtra(IS_SERVER, false);
-		renderer = new GameRenderer(this, address, isServer);
+		mGame = new Game(address, isServer);
+		renderer = new GameRenderer(this, mGame);
 		view.setRenderer(renderer);
 		
 		setContentView(view);
@@ -90,6 +92,7 @@ public class GameActivity extends Activity implements SensorEventListener{
 	@Override
 	protected void onResume() {
         super.onResume();
+        view.onResume();
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         mSensorManager.registerListener(this, mMagneticField, SensorManager.SENSOR_DELAY_NORMAL);
     }
@@ -97,6 +100,7 @@ public class GameActivity extends Activity implements SensorEventListener{
 	@Override
 	protected void onPause() {
 		super.onPause();
+		view.onPause();
 		mSensorManager.unregisterListener(this);
 	}
 
@@ -154,10 +158,10 @@ public class GameActivity extends Activity implements SensorEventListener{
 			//Log.d(TAG, newZ + " " + newY);
 			
 			if (Math.abs(prevZ - newZ) > 0){
-				renderer.updatePaddleZ(newZ);
+				mGame.updatePaddleZ(newZ);
 			}
 			if (Math.abs(prevY - newY) > 0){
-				renderer.updatePaddleY(newY);
+				mGame.updatePaddleY(newY);
 			}
         }
 		

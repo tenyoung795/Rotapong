@@ -8,6 +8,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
 import android.os.SystemClock;
+import android.util.Log;
 
 import com.penapps.rotapong.shapes.Ball;
 import com.penapps.rotapong.shapes.Paddle;
@@ -26,8 +27,8 @@ public class Game {
 	private long prevMillis;
 	private GameSocket mSocket;
 	
-	public Game(GL10 gl, Context context, InetAddress server, boolean isServer){
-		ball = new Ball(gl, context, 0.0f, 0.0f, -8.0f);
+	public Game(InetAddress server, boolean isServer){
+		ball = new Ball(0.0f, 0.0f, -8.0f);
 		otherPaddle = new Paddle(true, 0.0f, 0.0f, 0.0f);
 		paddle = new Paddle(true, 0.0f, 0.0f, 0.0f);
 		try {
@@ -41,6 +42,7 @@ public class Game {
 	public void step()
 	{
 		try {
+			moveBall();
 			FloatPair otherPair = mSocket.roundTrip(paddle.x, paddle.y);
 			otherPaddle.x = -otherPair.first;
 			otherPaddle.y = -otherPair.second;
@@ -54,4 +56,79 @@ public class Game {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public void createResources(GL10 gl, Context context)
+	{
+		ball.createResources(gl, context);
+	}
+	
+	private void moveBall() {
+		if (ball.zDir) {
+			ball.z += ball.zSpeed;
+			if (ball.z >= -6f) {
+				checkLose();
+				bounceCount++;
+				ball.zDir = false;
+			}
+		} else {
+			ball.z -= ball.zSpeed;
+			if (ball.z <= -10.0f) {
+				bounceCount++;
+				ball.zDir = true;
+			}
+		}
+		if (ball.xDir){
+			ball.x += ball.xSpeed;
+			if (ball.x >= 1.75f)
+				ball.xDir = false;
+		} else {
+			ball.x -= ball.xSpeed;
+			if (ball.x <= -1.75f)
+				ball.xDir = true;
+		}
+		if (ball.yDir){
+			ball.y += ball.ySpeed;
+			if (ball.y >= 1.75f)
+				ball.yDir = false;
+		} else {
+			ball.y -= ball.ySpeed;
+			if (ball.y <= -1.75f)
+				ball.yDir = true;
+		}
+		
+		if (bounceCount % 5 == 0 && bounceCount != 0){
+			//game.ball.xSpeed += (float) Math.pow(2, ((int)(Math.random() * ((8 - 5) + 1) + 5)) * -1);
+			//game.ball.ySpeed += (float) Math.pow(2, ((int)(Math.random() * ((8 - 5) + 1) + 5)) * -1);
+			//Log.i("TAG", game.ball.xSpeed + " " + game.ball.ySpeed);
+		}
+		
+	}
+	
+	private void checkLose() {
+		if (ball.zDir) {
+			if (ball.x + .5f < paddle.x){
+				Log.d("TAG", ball.x + ", " + ball.y + " " + paddle.x + ", " + paddle.y);
+			}
+			else if (ball.x > paddle.x + 1.0f){
+				Log.d("TAG", ball.x + ", " + ball.y + " " + paddle.x + ", " + paddle.y);
+			}
+			else if (ball.y > paddle.y + 1.5f){
+				Log.d("TAG", ball.x + ", " + ball.y + " " + paddle.x + ", " + paddle.y);
+			}
+			else if (ball.y + .1f < paddle.y){
+				Log.d("TAG", ball.x + ", " + ball.y + " " + paddle.x + ", " + paddle.y);
+			}
+			// tell other device if this guy loses.
+		}
+		return;
+	}
+	
+	public void updatePaddleZ(int newZ) {
+		paddle.x = ((int) (newZ / 5)) * 0.1f;
+	}
+
+	public void updatePaddleY(int newY) {
+		paddle.y = (float) ((newY / 4) * 0.1f);
+	}
+
 }

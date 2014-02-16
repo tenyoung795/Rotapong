@@ -5,6 +5,8 @@ import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import android.content.Context;
+
 import com.penapps.rotapong.util.Buffers;
 
 public class Paddle implements Shape {
