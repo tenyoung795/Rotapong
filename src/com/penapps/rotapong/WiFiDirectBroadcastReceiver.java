@@ -31,45 +31,53 @@ import android.util.Log;
  */
 public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
-    private WifiP2pManager manager;
-    private Channel channel;
-    private MainActivity activity;
+	private WifiP2pManager manager;
+	private Channel channel;
+	private MainActivity activity;
 
-    /**
-     * @param manager WifiP2pManager system service
-     * @param channel Wifi p2p channel
-     * @param activity activity associated with the receiver
-     */
-    public WiFiDirectBroadcastReceiver(WifiP2pManager manager, Channel channel,
-            MainActivity activity) {
-        super();
-        this.manager = manager;
-        this.channel = channel;
-        this.activity = activity;
-    }
+	/**
+	 * @param manager
+	 *            WifiP2pManager system service
+	 * @param channel
+	 *            Wifi p2p channel
+	 * @param activity
+	 *            activity associated with the receiver
+	 */
+	public WiFiDirectBroadcastReceiver(WifiP2pManager manager, Channel channel,
+			MainActivity activity) {
+		super();
+		this.manager = manager;
+		this.channel = channel;
+		this.activity = activity;
+	}
 
-    /*
-     * (non-Javadoc)
-     * @see android.content.BroadcastReceiver#onReceive(android.content.Context,
-     * android.content.Intent)
-     */
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        String action = intent.getAction();
-        if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
-            int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
-            Log.d(MainActivity.TAG, "P2P state changed - " + (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED));
-        } else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
-        	manager.requestPeers(channel, activity);
-            Log.d(MainActivity.TAG, "P2P peers changed");
-        } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
-            NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
-            if (networkInfo.isConnected()) {
-                manager.requestConnectionInfo(channel, activity);
-            }
-        } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
-            activity.updateThisDevice((WifiP2pDevice) intent.getParcelableExtra(
-                    WifiP2pManager.EXTRA_WIFI_P2P_DEVICE));
-        }
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.content.BroadcastReceiver#onReceive(android.content.Context,
+	 * android.content.Intent)
+	 */
+	@Override
+	public void onReceive(Context context, Intent intent) {
+		String action = intent.getAction();
+		if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
+			int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
+			Log.d(MainActivity.TAG, "P2P state changed - "
+					+ (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED));
+		} else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
+			manager.requestPeers(channel, activity);
+			Log.d(MainActivity.TAG, "P2P peers changed");
+		} else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION
+				.equals(action)) {
+			NetworkInfo networkInfo = (NetworkInfo) intent
+					.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
+			if (networkInfo.isConnected()) {
+				manager.requestConnectionInfo(channel, activity);
+			}
+		} else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION
+				.equals(action)) {
+			activity.updateThisDevice((WifiP2pDevice) intent
+					.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE));
+		}
+	}
 }
