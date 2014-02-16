@@ -183,13 +183,13 @@ public class MainActivity extends Activity implements ChannelListener,
 
 	/** register the BroadcastReceiver with the intent values to be matched */
 	@Override
-	public void onResume() {
+	protected void onResume() {
 		super.onResume();
 		registerReceiver();
 	}
 
 	@Override
-	public void onPause() {
+	protected void onPause() {
 		super.onPause();
 		unregisterReceiver();
 	}
