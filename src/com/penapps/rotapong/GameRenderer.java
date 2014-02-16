@@ -1,5 +1,6 @@
 package com.penapps.rotapong;
 
+import java.net.InetAddress;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -21,14 +22,19 @@ public class GameRenderer implements Renderer {
 	private Context mContext;
 	private Camera mCamera;
 	private Game game;
+	private InetAddress mServer;
+	private boolean mIsServer;
 	
-	public GameRenderer(Context context) {
+	public GameRenderer(Context context, InetAddress server, boolean isServer) {
 		mContext = context;
 		mCamera = new Camera(false, 0.0f, 0.0f, 0.0f);
+		mServer = server;
+		mIsServer = isServer;
 	}
 
 	@Override
 	public void onDrawFrame(GL10 gl) {
+		game.step();
 	    
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
@@ -133,7 +139,7 @@ public class GameRenderer implements Renderer {
 
 		gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);
 
-		game = new Game(gl, mContext);
+		game = new Game(gl, mContext, mServer, mIsServer);
 	}
 
 	public void checkLose() {

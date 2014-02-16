@@ -306,8 +306,9 @@ public class MainActivity extends Activity implements ChannelListener,
 	private void startGame(WifiP2pInfo info) {
 		Log.d(TAG, "Started game!");
 		startActivity(
-			new Intent(this, info.isGroupOwner? TestServerActivity.class : TestClientActivity.class)
-				.putExtra(TestClientActivity.SERVER, info.groupOwnerAddress)
+			new Intent(this, GameActivity.class)
+				.putExtra(GameActivity.SERVER, info.groupOwnerAddress)
+				.putExtra(GameActivity.IS_SERVER, info.isGroupOwner)
 		);
 	}
 }

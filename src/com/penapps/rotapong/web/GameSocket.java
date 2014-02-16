@@ -11,5 +11,7 @@ public interface GameSocket extends Closeable {
 	
 	void send(float x, float y) throws IOException;	
 	FloatPair recv() throws IOException;
+	
+	FloatPair roundTrip(float x, float y) throws IOException;
 
 }

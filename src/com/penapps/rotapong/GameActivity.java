@@ -1,7 +1,10 @@
 package com.penapps.rotapong;
 
+import java.net.InetAddress;
+
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -19,6 +22,8 @@ import android.widget.Button;
 public class GameActivity extends Activity implements SensorEventListener{
 
 	public static final String TAG = "GameActivity";
+	public static final String SERVER = "com.penapps.rotapong.SERVER";
+	public static final String IS_SERVER = "com.penapps.rotapong.IS_SERVER";
 
 	private SensorManager mSensorManager;
 	private Sensor mAccelerometer, mMagneticField;
@@ -49,7 +54,10 @@ public class GameActivity extends Activity implements SensorEventListener{
 		calibrate = new Button(view.getContext());
 		calibrate.setText("Calibrate me!");
 		
-		renderer = new GameRenderer(this);
+		Intent intent = getIntent();
+		InetAddress address = (InetAddress)intent.getSerializableExtra(SERVER);
+		boolean isServer = intent.getBooleanExtra(IS_SERVER, false);
+		renderer = new GameRenderer(this, address, isServer);
 		view.setRenderer(renderer);
 		
 		setContentView(view);

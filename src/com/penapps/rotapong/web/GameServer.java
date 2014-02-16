@@ -33,8 +33,6 @@ public class GameServer implements GameSocket {
 
 	@Override
 	public void send(float x, float y) throws IOException {
-		if (mClient == null)
-			throw new IllegalStateException("Server has not started communicating with client yet");
 		ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
 		DataOutputStream stream = new DataOutputStream(bytesOut);
 		try
@@ -74,6 +72,13 @@ public class GameServer implements GameSocket {
 	@Override
 	public void close() throws IOException {
 		mSocket.close();
+	}
+
+	@Override
+	public FloatPair roundTrip(float x, float y) throws IOException {
+		FloatPair opponentPair = recv();
+		send(x, y);
+		return opponentPair;
 	}
 	
 }

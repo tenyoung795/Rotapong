@@ -61,4 +61,12 @@ public class GameClient implements GameSocket {
 		return opponentPair;
 	}
 
+	@Override
+	public FloatPair roundTrip(float x, float y) throws IOException {
+		send(x, y);
+		return recv();
+	}
+	
+	
+
 }
