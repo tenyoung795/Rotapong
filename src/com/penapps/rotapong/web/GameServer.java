@@ -7,21 +7,26 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.util.Arrays;
+
+import android.util.Log;
 
 import com.penapps.rotapong.util.FloatPair;
 
 public class GameServer implements GameSocket {
 	
 	public static final int PORT = 40001;
+	private static final String TAG = GameServer.class.getSimpleName();
 	private DatagramSocket mSocket;
 	private long mLastTimeMillis;
 	private SocketAddress mClient;
 	
-	public GameServer() throws SocketException
+	public GameServer(InetAddress address) throws SocketException
 	{
-		mSocket = new DatagramSocket(PORT);
+		mSocket = new DatagramSocket(PORT, address);
 		mLastTimeMillis = 0l;
 		mClient = null;
 	}
@@ -30,14 +35,16 @@ public class GameServer implements GameSocket {
 	public void send(float x, float y) throws IOException {
 		if (mClient == null)
 			throw new IllegalStateException("Server has not started communicating with client yet");
-		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		DataOutputStream stream = new DataOutputStream(new ByteArrayOutputStream());
+		ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+		DataOutputStream stream = new DataOutputStream(bytesOut);
 		try
 		{
 			stream.writeLong(System.currentTimeMillis());
 			stream.writeFloat(x);
 			stream.writeFloat(y);
-			mSocket.send(new DatagramPacket(bytes.toByteArray(), bytes.size(), mClient));
+			stream.flush();
+			byte[] bytes = bytesOut.toByteArray();
+			mSocket.send(new DatagramPacket(bytes, bytes.length, mClient));
 		} finally
 		{
 			stream.close();
@@ -49,24 +56,19 @@ public class GameServer implements GameSocket {
 		byte[] bytes = new byte[PACKET_SIZE_BYTES];
 		DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
 		long timestamp = 0l;
-		ByteArrayInputStream byteInput = new ByteArrayInputStream(bytes);
-        DataInputStream stream = new DataInputStream(byteInput);
-        try
-        {
-        	do {
-        		mSocket.receive(packet);
-        		byteInput.reset();
-        		timestamp = stream.readLong();
-        	} while (timestamp < mLastTimeMillis);
-        	timestamp = mLastTimeMillis;
-        	if (mClient == null)
-        	{
-        		mClient = packet.getSocketAddress();
-        	}
-        	return new FloatPair(stream.readFloat(), stream.readFloat());
-        } finally {
-        	stream.close();
-        }
+		DataInputStream stream;
+		do {
+			mSocket.receive(packet);
+			stream = new DataInputStream(new ByteArrayInputStream(packet.getData()));
+			timestamp = stream.readLong();
+		} while (timestamp < mLastTimeMillis);
+		mLastTimeMillis = timestamp;
+		if (mClient == null)
+		{
+			mClient = packet.getSocketAddress();
+		}
+		FloatPair opponentPair = new FloatPair(stream.readFloat(), stream.readFloat());
+		return opponentPair;
 	}
 
 	@Override

@@ -38,6 +38,14 @@
             android:name="com.penapps.rotapong.test.TestUDPActivity"
             android:label="@string/title_activity_test_udp" >
         </activity>
+        <activity
+            android:name="com.penapps.rotapong.test.TestServerActivity"
+            android:label="@string/title_activity_test_server" >
+        </activity>
+        <activity
+            android:name="com.penapps.rotapong.test.TestClientActivity"
+            android:label="@string/title_activity_test_client" >
+        </activity>
     </application>
 
 </manifest>

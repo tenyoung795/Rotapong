@@ -16,8 +16,6 @@
 
 package com.penapps.rotapong;
 
-import com.penapps.rotapong.test.TestUDPActivity;
-
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -47,6 +45,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.penapps.rotapong.test.TestClientActivity;
+import com.penapps.rotapong.test.TestServerActivity;
 
 /**
  * An activity that uses WiFi Direct APIs to discover and connect with available
@@ -304,7 +305,9 @@ public class MainActivity extends Activity implements ChannelListener,
 
 	private void startGame(WifiP2pInfo info) {
 		Log.d(TAG, "Started game!");
-		startActivity(new Intent(this, TestUDPActivity.class).putExtra(
-				TestUDPActivity.INFO, info));
+		startActivity(
+			new Intent(this, info.isGroupOwner? TestServerActivity.class : TestClientActivity.class)
+				.putExtra(TestClientActivity.SERVER, info.groupOwnerAddress)
+		);
 	}
 }

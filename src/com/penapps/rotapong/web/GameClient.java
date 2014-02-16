@@ -32,7 +32,7 @@ public class GameClient implements GameSocket {
 	@Override
 	public void send(float x, float y) throws IOException {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		DataOutputStream stream = new DataOutputStream(new ByteArrayOutputStream());
+		DataOutputStream stream = new DataOutputStream(bytes);
 		try
 		{
 			stream.writeLong(System.currentTimeMillis());
@@ -50,20 +50,15 @@ public class GameClient implements GameSocket {
 		byte[] bytes = new byte[PACKET_SIZE_BYTES];
 		DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
 		long timestamp = 0l;
-		ByteArrayInputStream byteInput = new ByteArrayInputStream(bytes);
-        DataInputStream stream = new DataInputStream(byteInput);
-        try
-        {
-        	do {
-        		mSocket.receive(packet);
-        		byteInput.reset();
-        		timestamp = stream.readLong();
-        	} while (timestamp < mLastTimeMillis);
-        	timestamp = mLastTimeMillis;
-        	return new FloatPair(stream.readFloat(), stream.readFloat());
-        } finally {
-        	stream.close();
-        }
+		DataInputStream stream;
+		do {
+			mSocket.receive(packet);
+			stream = new DataInputStream(new ByteArrayInputStream(packet.getData()));
+			timestamp = stream.readLong();
+		} while (timestamp < mLastTimeMillis);
+		mLastTimeMillis = timestamp;
+		FloatPair opponentPair = new FloatPair(stream.readFloat(), stream.readFloat());
+		return opponentPair;
 	}
 
 }
