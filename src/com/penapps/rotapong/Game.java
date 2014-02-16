@@ -45,7 +45,7 @@ public class Game {
 			moveBall();
 			FloatPair otherPair = mSocket.roundTrip(paddle.x, paddle.y);
 			otherPaddle.x = -otherPair.first;
-			otherPaddle.y = -otherPair.second;
+			otherPaddle.y = otherPair.second;
 			long nowMillis = SystemClock.elapsedRealtime();
 			long diff = nowMillis - prevMillis;
 			if (diff < FRAME_MILLIS)
