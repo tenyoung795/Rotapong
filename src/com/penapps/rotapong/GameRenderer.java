@@ -131,5 +131,10 @@ public class GameRenderer implements Renderer {
 	public void updatePaddleY(int newY){
 		game.paddle.y = (float) ((newY / 7) * 0.1f);
 	}
+	
+	public void updateOtherPaddle(float newZ, float newY){
+		game.otherPaddle.x = newZ;
+		game.otherPaddle.y = newY;
+	}
 
 }
