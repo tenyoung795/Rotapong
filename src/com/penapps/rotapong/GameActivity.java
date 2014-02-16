@@ -13,11 +13,10 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 public class GameActivity extends Activity implements SensorEventListener{
 
-	private static final String TAG = "TestRotationActivity";
+	public static final String TAG = "GameActivity";
 
 	private SensorManager mSensorManager;
 	private Sensor mAccelerometer, mMagneticField;
@@ -138,7 +137,7 @@ public class GameActivity extends Activity implements SensorEventListener{
 			int newZ = (int)Math.toDegrees(mOrientation[0] - calibrationZ);
 			int newY = (int)Math.toDegrees((mOrientation[2]));
 			
-			Log.d(TAG, newZ + " " + newY);
+			//Log.d(TAG, newZ + " " + newY);
 			
 			if (Math.abs(prevZ - newZ) > 0){
 				renderer.updatePaddleZ(newZ);

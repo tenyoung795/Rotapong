@@ -3,6 +3,7 @@ package com.penapps.rotapong.shapes;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.FloatBuffer;
+import java.util.Random;
 
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
@@ -12,6 +13,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLUtils;
+import android.util.Log;
 
 import com.penapps.rotapong.R;
 import com.penapps.rotapong.util.Buffers;
@@ -23,8 +25,9 @@ public class Ball implements Shape {
 	
 	private int[] mTexturePointer;
 	private int[] mCropWorkspace;
-	public float x, y, z;
-	public boolean zDir;
+	public float x, y, z, xSpeed, ySpeed;
+	public float zSpeed = 0.0625f;
+	public boolean zDir, yDir, xDir = false;
 	
 	private static final FloatBuffer VERTICES = Buffers.wrap(new float[] {
         -1.0f, -1.0f, 0.0f,
@@ -40,12 +43,22 @@ public class Ball implements Shape {
 		1.0f, 1.0f
 	});
 	
-	public Ball(GL10 gl, Context context, boolean zDir, float x, float y, float z)
+	public Ball(GL10 gl, Context context, float x, float y, float z)
 	{	
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.zDir = zDir;
+		Random random = new Random();
+
+		this.xSpeed = (float) Math.pow(2, (int)(Math.random() * ((7 - 5) + 1) + 5) * -1);
+		this.ySpeed = (float) Math.pow(2, (int)(Math.random() * ((7 - 5) + 1) + 5) * -1);
+		if (random.nextInt(1) == 0)
+			this.zDir = true;
+		if (random.nextInt(1) == 0)
+			this.xDir = true;
+		if (random.nextInt(1) == 0)
+			this.yDir = true;
+		
 		InputStream is = context.getResources().openRawResource(R.drawable.ball);
 		Bitmap bitmap = null;
 		try {
