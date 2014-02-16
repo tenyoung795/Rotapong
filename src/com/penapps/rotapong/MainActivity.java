@@ -16,26 +16,36 @@
 
 package com.penapps.rotapong;
 
-import java.util.List;
+import com.penapps.rotapong.test.TestUDPActivity;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.WpsInfo;
+import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.p2p.WifiP2pManager.ActionListener;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.ChannelListener;
 import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 /**
@@ -53,29 +63,109 @@ public class MainActivity extends Activity implements ChannelListener, PeerListL
     private final IntentFilter intentFilter = new IntentFilter();
     private Channel channel;
     private BroadcastReceiver receiver = null;
-    private WifiP2pDevice thisDevice;
+    private WifiP2pDevice otherDevice;
     private WifiPeerListAdapter players;
     private ListView listOfPlayersView;
+    private TextView statusView;
+    private ProgressBar progressBar;
+    private Button yesButton, noButton, cancelButton;
+    private boolean waitingForReply;
+    private WifiP2pConfig config;
+    private final ActionListener channelListener = new ActionListener() {
+		
+		@Override
+		public void onSuccess() {
+		}
+		
+		@Override
+		public void onFailure(int reason) {
+			manager.discoverPeers(channel, channelListener);
+		}
+	}, inviteListener = new ActionListener() {
+
+		@Override
+		public void onFailure(int reason) {
+			if (waitingForReply)
+			{
+				statusView.setText("Trying again...");
+				manager.connect(channel, config, inviteListener);
+			}
+		}
+
+		@Override
+		public void onSuccess() {
+		}
+		
+	};
     
-    private final WifiP2pManager.ActionListener listener = new WifiP2pManager.ActionListener() {
-
-    	@Override
-    	public void onSuccess() {
-        }
-
-        @Override
-        public void onFailure(int reasonCode) {
-        	manager.discoverPeers(channel, listener);
-        }
-    };
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
         players = new WifiPeerListAdapter(this, R.layout.row_devices);
         listOfPlayersView = (ListView)findViewById(R.id.list_of_players);
         listOfPlayersView.setAdapter(players);
+        listOfPlayersView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				otherDevice = (WifiP2pDevice) arg0.getItemAtPosition(arg2);
+
+				config = new WifiP2pConfig();
+				config.deviceAddress = otherDevice.deviceAddress;
+				config.wps.setup = WpsInfo.PBC;
+				manager.connect(channel, config, inviteListener);
+				waitingForReply = true;
+				statusView.setText("Waiting for a reply...");
+				cancelButton.setVisibility(View.VISIBLE);
+				progressBar.setVisibility(View.VISIBLE);
+			}
+		});
+        
+        statusView = (TextView)findViewById(R.id.status);
+        statusView.setText("Searching for available players...");
+        
+        progressBar = (ProgressBar)findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.VISIBLE);
+        
+        yesButton = (Button)findViewById(R.id.yes);
+        yesButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+			}
+        	
+        });
+
+        noButton = (Button)findViewById(R.id.no);
+        noButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				manager.cancelConnect(channel, null);
+				otherDevice = null;
+				yesButton.setVisibility(View.INVISIBLE);
+				v.setVisibility(View.INVISIBLE);
+				justListAvailablePlayers();
+			}
+		});
+        
+        cancelButton = (Button)findViewById(R.id.cancel);
+        cancelButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				manager.cancelConnect(channel, null);
+				otherDevice = null;
+				waitingForReply = false;
+				v.setVisibility(View.INVISIBLE);
+				justListAvailablePlayers();
+			}
+        });
+        
+        waitingForReply = false;
 
         // add necessary intent values to be matched.
 
@@ -110,7 +200,7 @@ public class MainActivity extends Activity implements ChannelListener, PeerListL
 	
 	private void initChannel() {
 		channel = manager.initialize(this, getMainLooper(), null);
-        manager.discoverPeers(channel, listener);
+        manager.discoverPeers(channel, channelListener);
 	}
 	
 	private void unregisterReceiver()
@@ -130,14 +220,41 @@ public class MainActivity extends Activity implements ChannelListener, PeerListL
 		players.clear();
 		players.setNotifyOnChange(true);
 		players.addAll(peers.getDeviceList());
+		
+		if (!waitingForReply)
+		{
+			justListAvailablePlayers();
+		}
+	}
+	
+	private void justListAvailablePlayers()
+	{
+		statusView.setText("List of available players:");
+        progressBar.setVisibility(View.INVISIBLE);
 	}
 
 	@Override
 	public void onConnectionInfoAvailable(WifiP2pInfo info) {
+		if (!info.groupFormed)
+			return;
+
+		if (info.isGroupOwner)
+			startGame(info);
+		else
+		{
+			for (int i = players.getCount() - 1; i >= 0; i--)
+			{
+				otherDevice = players.getItem(i);
+				if (otherDevice.status == WifiP2pDevice.CONNECTED)
+				{
+					startGame(info);
+					return;
+				}
+			}
+		}
 	}
 	
 	public void updateThisDevice(WifiP2pDevice device) {
-		thisDevice = device;
 	}
 	
     /**
@@ -189,4 +306,10 @@ public class MainActivity extends Activity implements ChannelListener, PeerListL
             return "Unknown";
     	}
     }
+
+	private void startGame(WifiP2pInfo info) {
+		Log.d(TAG, "Started game!");
+		startActivity(new Intent(this, TestUDPActivity.class)
+			.putExtra(TestUDPActivity.INFO, info));
+	}
 }
