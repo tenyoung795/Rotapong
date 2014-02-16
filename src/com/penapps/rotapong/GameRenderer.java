@@ -21,26 +21,14 @@ public class GameRenderer implements Renderer {
 	private Context mContext;
 	private Camera mCamera;
 	private Game game;
-	long startTime;
 	
 	public GameRenderer(Context context) {
 		mContext = context;
 		mCamera = new Camera(false, 0.0f, 0.0f, 0.0f);
-		startTime = System.currentTimeMillis();
 	}
 
 	@Override
 	public void onDrawFrame(GL10 gl) {
-		long endTime = System.currentTimeMillis();
-	    long dt = endTime - startTime;
-	    if (dt < 33)
-			try {
-				Thread.sleep(33 - dt);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	    startTime = System.currentTimeMillis();
 	    
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
