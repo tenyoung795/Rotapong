@@ -50,13 +50,12 @@ public class GameRenderer implements Renderer {
 		*/
 		
 		gl.glPushMatrix();
-		gl.glTranslatef(game.otherPaddle.x, 0.0f, -5.0f);
+		gl.glTranslatef(game.otherPaddle.x, 0.0f, -9.0f);
 		gl.glScalef(0.75f, 0.75f, 0.75f);
 		game.otherPaddle.draw(gl);
 		gl.glPopMatrix();
 		
 		gl.glPushMatrix();
-		gl.glScalef(1.0f, 1.0f, 1.0f);
 		gl.glTranslatef(game.paddle.x, game.paddle.y, -5.0f);
 		game.paddle.draw(gl);
 		gl.glPopMatrix();
@@ -67,8 +66,7 @@ public class GameRenderer implements Renderer {
 			if (game.otherPaddle.x == 1.0f)
 				game.otherPaddle.dir = false;
 		}
-		else
-			
+		else	
 		{
 			game.otherPaddle.x -= 0.0625f;
 			if (game.otherPaddle.x == -1.0f)
@@ -80,17 +78,17 @@ public class GameRenderer implements Renderer {
 		gl.glScalef(0.125f, 0.125f, 0.125f);
 		game.ball.draw(gl);
 		gl.glPopMatrix();
-		if (game.ball.dir)
+		if (game.ball.zDir)
 		{
 			game.ball.z += 0.0625f;
-			if (game.ball.z == -2.0f)
-				game.ball.dir = false;
+			if (game.ball.z == -6f)
+				game.ball.zDir = false;
 		}
 		else
 		{
 			game.ball.z -= 0.0625f;
-			if (game.ball.z == -4.0f)
-				game.ball.dir = true;
+			if (game.ball.z == -10.0f)
+				game.ball.zDir = true;
 		}
 	}
 
@@ -127,13 +125,11 @@ public class GameRenderer implements Renderer {
 	}
 
 	public void updatePaddleZ(int newZ) {
-		game.paddle.x = (float) newZ / 40;
-		return;
+		game.paddle.x = ((int)(newZ / 7)) * 0.1f;
 	}
 	
 	public void updatePaddleY(int newY){
-		game.paddle.y = (float) newY / 40;
-		return;
+		game.paddle.y = (float) ((newY / 7) * 0.1f);
 	}
 
 }

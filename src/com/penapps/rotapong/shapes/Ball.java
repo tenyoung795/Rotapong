@@ -24,7 +24,7 @@ public class Ball implements Shape {
 	private int[] mTexturePointer;
 	private int[] mCropWorkspace;
 	public float x, y, z;
-	public boolean dir;
+	public boolean zDir;
 	
 	private static final FloatBuffer VERTICES = Buffers.wrap(new float[] {
         -1.0f, -1.0f, 0.0f,
@@ -40,12 +40,12 @@ public class Ball implements Shape {
 		1.0f, 1.0f
 	});
 	
-	public Ball(GL10 gl, Context context, boolean dir, float x, float y, float z)
+	public Ball(GL10 gl, Context context, boolean zDir, float x, float y, float z)
 	{	
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.dir = dir;
+		this.zDir = zDir;
 		InputStream is = context.getResources().openRawResource(R.drawable.ball);
 		Bitmap bitmap = null;
 		try {
@@ -66,6 +66,8 @@ public class Ball implements Shape {
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S, GL10.GL_CLAMP_TO_EDGE);
 		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T, GL10.GL_CLAMP_TO_EDGE);
 		gl.glTexEnvf(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE, GL10.GL_REPLACE);
+		gl.glEnable(GL10.GL_BLEND);
+		gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
 		
 		mCropWorkspace = new int[4];
