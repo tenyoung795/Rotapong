@@ -137,6 +137,18 @@ public class GameRenderer implements Renderer {
 
 	public void checkLose() {
 		if (game.ball.zDir) {
+			if (game.ball.x < game.paddle.x){
+				Log.d("TAG", "YOU LOSE");
+			}
+			else if (game.ball.x + .25 < game.paddle.x + 1){
+				Log.d("TAG", "YOU LOSE");
+			}
+			else if (game.ball.y + .25 > game.paddle.y + 1){
+				Log.d("TAG", "YOU LOSE");
+			}
+			else if (game.ball.y < game.paddle.y){
+				Log.d("TAG", "YOU LOSE");
+			}
 			// broadcast ball direction to other device
 		}
 		return;
@@ -154,5 +166,4 @@ public class GameRenderer implements Renderer {
 		game.otherPaddle.x = newZ;
 		game.otherPaddle.y = newY;
 	}
-
 }
