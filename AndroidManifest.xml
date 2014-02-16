@@ -41,6 +41,7 @@
         <activity
             android:name="com.penapps.rotapong.GameActivity"
             android:theme="@android:style/Theme.NoTitleBar"
+			android:screenOrientation="portrait"
             android:label="@string/title_activity_game" >
         </activity>
         <activity
