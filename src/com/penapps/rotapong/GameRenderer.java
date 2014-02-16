@@ -12,7 +12,6 @@ import android.opengl.GLU;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.penapps.rotapong.shapes.Camera;
 import com.penapps.rotapong.util.Buffers;
 
 public class GameRenderer implements Renderer {
@@ -21,12 +20,10 @@ public class GameRenderer implements Renderer {
 			0.0f, 0.0f, 1.0f, 0.0f });
 
 	private Context mContext;
-	private Camera mCamera;
 	private Game mGame;
 	
 	public GameRenderer(Context context, Game game) {
 		mContext = context;
-		mCamera = new Camera(false, 0.0f, 0.0f, 0.0f);
 		mGame = game;
 	}
 
