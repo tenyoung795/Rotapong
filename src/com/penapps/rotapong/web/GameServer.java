@@ -14,6 +14,8 @@ import java.util.Arrays;
 
 import android.util.Log;
 
+import com.penapps.rotapong.Game;
+import com.penapps.rotapong.shapes.Ball;
 import com.penapps.rotapong.util.FloatPair;
 
 public class GameServer implements GameSocket {
@@ -29,6 +31,35 @@ public class GameServer implements GameSocket {
 		mSocket = new DatagramSocket(PORT, address);
 		mLastTimeMillis = 0l;
 		mClient = null;
+	}
+	
+	@Override
+	public void initBall(Ball b) throws IOException {
+		// reverse the ball's x coordinate
+		b.x = -b.x;
+		
+		// rotate z across middle z
+		b.z = -(b.z - Game.MIDDLE_Z) + Game.MIDDLE_Z;
+		
+		byte[] bytes = new byte[PACKET_SIZE_BYTES];
+		DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
+		long bitmask = 0l;
+		DataInputStream stream ;
+		do {
+			mSocket.receive(packet);
+			stream = new DataInputStream(new ByteArrayInputStream(packet.getData()));
+			bitmask = stream.readLong();
+		} while (bitmask >= 0);
+		
+		// reverse x and z dir
+		b.xDir = (bitmask & BALL_X_DIR_BITMASK) == 0;
+		b.yDir = (bitmask & BALL_Y_DIR_BITMASK) != 0;
+		b.zDir = (bitmask & BALL_Z_DIR_BITMASK) == 0;
+		
+		b.xSpeed = stream.readFloat();
+		b.ySpeed = stream.readFloat();
+		
+		mClient = packet.getSocketAddress();
 	}
 
 	@Override
@@ -61,10 +92,6 @@ public class GameServer implements GameSocket {
 			timestamp = stream.readLong();
 		} while (timestamp < mLastTimeMillis);
 		mLastTimeMillis = timestamp;
-		if (mClient == null)
-		{
-			mClient = packet.getSocketAddress();
-		}
 		FloatPair opponentPair = new FloatPair(stream.readFloat(), stream.readFloat());
 		return opponentPair;
 	}
@@ -76,9 +103,8 @@ public class GameServer implements GameSocket {
 
 	@Override
 	public FloatPair roundTrip(float x, float y) throws IOException {
-		FloatPair opponentPair = recv();
 		send(x, y);
-		return opponentPair;
+		return recv();
 	}
 	
 }

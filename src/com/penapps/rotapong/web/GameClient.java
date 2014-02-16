@@ -10,6 +10,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
+import com.penapps.rotapong.shapes.Ball;
 import com.penapps.rotapong.util.FloatPair;
 
 public class GameClient implements GameSocket {
@@ -27,6 +28,28 @@ public class GameClient implements GameSocket {
 	@Override
 	public void close() throws IOException {
 		mSocket.close();
+	}
+	
+	@Override
+	public void initBall(Ball b) throws IOException {
+		// serve the ball
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		DataOutputStream stream = new DataOutputStream(bytes);
+		try
+		{
+			stream.writeLong(0x8000000000000000l
+				| (b.zDir? BALL_Z_DIR_BITMASK : 0)
+				| (b.yDir? BALL_Y_DIR_BITMASK : 0)
+				| (b.xDir? BALL_X_DIR_BITMASK : 0)
+			);
+			stream.writeFloat(b.xSpeed);
+			stream.writeFloat(b.ySpeed);
+			mSocket.send(new DatagramPacket(bytes.toByteArray(), bytes.size(), mServer, GameServer.PORT));
+		} finally
+		{
+			stream.close();
+		}
+		
 	}
 
 	@Override
@@ -63,8 +86,9 @@ public class GameClient implements GameSocket {
 
 	@Override
 	public FloatPair roundTrip(float x, float y) throws IOException {
+		FloatPair fp = recv();
 		send(x, y);
-		return recv();
+		return fp;
 	}
 	
 	

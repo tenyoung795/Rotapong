@@ -19,18 +19,23 @@ import com.penapps.rotapong.web.GameSocket;
 
 public class Game {
 	private static final long FRAME_MILLIS = 17;
+	public static final float MIDDLE_Z = -8.0f;
 	public final Paddle paddle, otherPaddle;
 	//public final Paddle paddle;
 	
-	public final Ball ball;
+	public Ball ball;
 	public int bounceCount = 0;
 	private long prevMillis;
 	private GameSocket mSocket;
+	private boolean mIsServer;
+	private boolean hasBegun;
 	
 	public Game(InetAddress server, boolean isServer){
+		hasBegun = false;
 		ball = new Ball(0.0f, 0.0f, -8.0f);
 		otherPaddle = new Paddle(true, 0.0f, 0.0f, 0.0f);
 		paddle = new Paddle(true, 0.0f, 0.0f, 0.0f);
+		mIsServer = isServer;
 		try {
 			mSocket = isServer? new GameServer(server) : new GameClient(server);
 		} catch (SocketException e) {
@@ -42,6 +47,12 @@ public class Game {
 	public void step()
 	{
 		try {
+			if (!hasBegun)
+			{
+				hasBegun = true;
+				mSocket.initBall(ball);
+				return;
+			}
 			moveBall();
 			FloatPair otherPair = mSocket.roundTrip(paddle.x, paddle.y);
 			otherPaddle.x = -otherPair.first;
@@ -52,6 +63,7 @@ public class Game {
 			{
 				SystemClock.sleep(FRAME_MILLIS - diff);
 			}
+			prevMillis = nowMillis;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
