@@ -1,81 +1,115 @@
 package com.penapps.rotapong.shapes;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import android.content.Context;
-
 import com.penapps.rotapong.util.Buffers;
 
-/*
- * As of now, a ball is just a scaled sprite.
- */
 public class Paddle implements Shape {
-	
-	private int[] mTexturePointer;
-	public float x, y, z;
+	public float x, y ,z;
 	public boolean dir;
 	
 	private static final FloatBuffer VERTICES = Buffers.wrap(new float[] {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        -0.5f, 0.5f, 0.0f,
-        0.5f, 0.5f, 0.0f
-	});
+        -1.0f, -1.0f, 0.25f,
+        1.0f, -1.0f, 0.25f,
+        -1.0f, 1.0f, 0.25f,
+        1.0f, 1.0f, 0.25f,
+
+        1.0f, -1.0f, 0.25f,
+        1.0f, -1.0f, -0.25f,
+        1.0f, 1.0f, 0.25f,
+        1.0f, 1.0f, -0.25f,
+
+        1.0f, -1.0f, -0.25f,
+        -1.0f, -1.0f, -0.25f,
+        1.0f, 1.0f, -0.25f,
+        -1.0f, 1.0f, -0.25f,
+
+        -1.0f, -1.0f, -0.25f,
+        -1.0f, -1.0f, 0.25f,
+        -1.0f, 1.0f, -0.25f,
+        -1.0f, 1.0f, 0.25f,
+
+        -1.0f, -1.0f, -0.25f,
+        1.0f, -1.0f, -0.25f,
+        -1.0f, -1.0f, 0.25f,
+        1.0f, -1.0f, 0.25f,
+
+        -1.0f, 1.0f, 0.25f,
+        1.0f, 1.0f, 0.25f,
+        -1.0f, 1.0f, -0.25f,
+        1.0f, 1.0f, -0.25f,
+    });
+
+	private static final FloatBuffer NORMAL = Buffers.wrap(new float[] {
+        0.0f, 0.0f, 1.0f, 						
+        0.0f, 0.0f, -1.0f, 
+        0.0f, 1.0f, 0.0f, 
+        0.0f, -1.0f, 0.0f, 
+
+        0.0f, 0.0f, 1.0f, 
+        0.0f, 0.0f, -1.0f, 
+        0.0f, 1.0f, 0.0f, 
+        0.0f, -1.0f, 0.0f,
+
+        0.0f, 0.0f, 1.0f, 
+        0.0f, 0.0f, -1.0f, 
+        0.0f, 1.0f, 0.0f, 
+        0.0f, -1.0f, 0.0f,
+
+        0.0f, 0.0f, 1.0f, 
+        0.0f, 0.0f, -1.0f, 
+        0.0f, 1.0f, 0.0f, 
+        0.0f, -1.0f, 0.0f,
+
+        0.0f, 0.0f, 1.0f, 
+        0.0f, 0.0f, -1.0f, 
+        0.0f, 1.0f, 0.0f, 
+        0.0f, -1.0f, 0.0f,
+
+        0.0f, 0.0f, 1.0f, 
+        0.0f, 0.0f, -1.0f, 
+        0.0f, 1.0f, 0.0f, 
+        0.0f, -1.0f, 0.0f,
+    });
+
+	private static final ByteBuffer INDICES = Buffers.wrap(new byte[] {
+        0, 1, 3, 0, 3, 2,
+        4, 5, 7, 4, 7, 6,
+        8, 9, 11, 8, 11, 10,
+        12, 13, 15, 12, 15, 14, 
+        16, 17, 19, 16, 19, 18, 
+        20, 21, 23, 20, 23, 22, 
+    });
 	
-	private static final FloatBuffer TEXTURE = Buffers.wrap(new float[]{
-		0.0f, 0.0f, 
-		0.0f, 1.0f, 
-		1.0f, 0.0f, 
-		1.0f, 1.0f
-	});
-	
-	public Paddle(GL10 gl, Context context, boolean dir, float x, float y, float z)
-	{	
+	public Paddle(boolean dir, float x, float y, float z) {
 		this.x = x;
 		this.y = y;
-		this.z = z;
+		this.z = y;
 		this.dir = dir;
-
-		mTexturePointer = new int[1];
-		gl.glGenTextures(1, mTexturePointer, 0);
-		gl.glBindTexture(GL10.GL_TEXTURE_2D, mTexturePointer[0]);
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S, GL10.GL_CLAMP_TO_EDGE);
-		gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T, GL10.GL_CLAMP_TO_EDGE);
-		gl.glTexEnvf(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE, GL10.GL_REPLACE);
-		gl.glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
-		//GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
-		
-		int error = gl.glGetError();
-		if (error != GL10.GL_NO_ERROR)
-		{
-			throw new RuntimeException("GL Error " + error);
-		}
-		
 	}
 
 	@Override
 	public void draw(GL10 gl) {
-		gl.glBindTexture(GL10.GL_TEXTURE_2D, mTexturePointer[0]);
-		
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+		gl.glEnableClientState(GL10.GL_NORMAL_ARRAY);
 
 		gl.glFrontFace(GL10.GL_CCW);
 		
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, VERTICES);
-		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, TEXTURE);
+		gl.glNormalPointer(GL10.GL_FLOAT, 0, NORMAL);
 		
-		gl.glEnable(GL10.GL_TEXTURE_2D);
-		//gl.glDrawElements(GL10.GL_TRIANGLES, INDICES.capacity(), GL10.GL_UNSIGNED_BYTE, INDICES);
-		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
+		gl.glDisable(GL10.GL_TEXTURE_2D);
+		gl.glDisable(GL10.GL_CULL_FACE);
+		gl.glDisable(GL10.GL_DEPTH_TEST);
+		gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE);
+		gl.glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+		gl.glDrawElements(GL10.GL_TRIANGLES, INDICES.capacity(), GL10.GL_UNSIGNED_BYTE, INDICES);
 		
 		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
-		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glDisableClientState(GL10.GL_NORMAL_ARRAY);
 	}
 
 }

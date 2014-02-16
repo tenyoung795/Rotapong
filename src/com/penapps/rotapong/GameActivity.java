@@ -2,6 +2,7 @@ package com.penapps.rotapong;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.PixelFormat;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -41,6 +42,9 @@ public class GameActivity extends Activity implements SensorEventListener{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		view = new GLSurfaceView(this);
+		//view.setEGLContextClientVersion(2);
+		view.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+		view.getHolder().setFormat(PixelFormat.RGBA_8888);
 		
 		calibrate = new Button(view.getContext());
 		calibrate.setText("Calibrate me!");

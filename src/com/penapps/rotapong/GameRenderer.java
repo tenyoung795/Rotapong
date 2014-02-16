@@ -47,6 +47,7 @@ public class GameRenderer implements Renderer {
 
 		gl.glPushMatrix();
 		gl.glTranslatef(game.paddle.x, game.paddle.y, -5.0f);
+		gl.glScalef(0.75f, 0.75f, 0.75f);
 		game.paddle.draw(gl);
 		gl.glPopMatrix();
 
