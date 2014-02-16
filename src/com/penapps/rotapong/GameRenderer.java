@@ -149,7 +149,7 @@ public class GameRenderer implements Renderer {
 			else if (game.ball.y < game.paddle.y){
 				Log.d("TAG", "YOU LOSE");
 			}
-			// broadcast ball direction to other device
+			// tell other device if this guy loses.
 		}
 		return;
 	}

@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 
 public class GameActivity extends Activity implements SensorEventListener{
@@ -71,6 +72,7 @@ public class GameActivity extends Activity implements SensorEventListener{
 				calibrated = false;
 			}
 		});
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	}
 
 	@Override
