@@ -9,6 +9,7 @@ import android.content.Context;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.penapps.rotapong.shapes.Camera;
 import com.penapps.rotapong.util.Buffers;
@@ -78,27 +79,27 @@ public class GameRenderer implements Renderer {
 		}
 		if (game.ball.xDir){
 			game.ball.x += game.ball.xSpeed;
-			if (game.ball.x >= 2f)
+			if (game.ball.x >= 1.75f)
 				game.ball.xDir = false;
 		} else {
 			game.ball.x -= game.ball.xSpeed;
-			if (game.ball.x <= -2f)
+			if (game.ball.x <= -1.75f)
 				game.ball.xDir = true;
 		}
 		if (game.ball.yDir){
 			game.ball.y += game.ball.ySpeed;
-			if (game.ball.y >= 2f)
+			if (game.ball.y >= 1.75f)
 				game.ball.yDir = false;
 		} else {
 			game.ball.y -= game.ball.ySpeed;
-			if (game.ball.y <= -2f)
+			if (game.ball.y <= -1.75f)
 				game.ball.yDir = true;
 		}
 		
 		if (game.bounceCount % 5 == 0 && game.bounceCount != 0){
-			game.ball.xSpeed += (float) Math.pow(2, ((int)(Math.random() * ((8 - 5) + 1) + 5)) * -1);
-			game.ball.ySpeed += (float) Math.pow(2, ((int)(Math.random() * ((8 - 5) + 1) + 5)) * -1);
-			Log.i("TAG", game.ball.xSpeed + " " + game.ball.ySpeed);
+			//game.ball.xSpeed += (float) Math.pow(2, ((int)(Math.random() * ((8 - 5) + 1) + 5)) * -1);
+			//game.ball.ySpeed += (float) Math.pow(2, ((int)(Math.random() * ((8 - 5) + 1) + 5)) * -1);
+			//Log.i("TAG", game.ball.xSpeed + " " + game.ball.ySpeed);
 		}
 		
 	}
@@ -138,17 +139,17 @@ public class GameRenderer implements Renderer {
 
 	public void checkLose() {
 		if (game.ball.zDir) {
-			if (game.ball.x < game.paddle.x){
-				Log.d("TAG", "YOU LOSE");
+			if (game.ball.x + .5f < game.paddle.x){
+				Log.d("TAG", game.ball.x + ", " + game.ball.y + " " + game.paddle.x + ", " + game.paddle.y);
 			}
-			else if (game.ball.x + .25 < game.paddle.x + 1){
-				Log.d("TAG", "YOU LOSE");
+			else if (game.ball.x > game.paddle.x + 1.0f){
+				Log.d("TAG", game.ball.x + ", " + game.ball.y + " " + game.paddle.x + ", " + game.paddle.y);
 			}
-			else if (game.ball.y + .25 > game.paddle.y + 1){
-				Log.d("TAG", "YOU LOSE");
+			else if (game.ball.y > game.paddle.y + 1.5f){
+				Log.d("TAG", game.ball.x + ", " + game.ball.y + " " + game.paddle.x + ", " + game.paddle.y);
 			}
-			else if (game.ball.y < game.paddle.y){
-				Log.d("TAG", "YOU LOSE");
+			else if (game.ball.y + .1f < game.paddle.y){
+				Log.d("TAG", game.ball.x + ", " + game.ball.y + " " + game.paddle.x + ", " + game.paddle.y);
 			}
 			// tell other device if this guy loses.
 		}
@@ -156,11 +157,11 @@ public class GameRenderer implements Renderer {
 	}
 
 	public void updatePaddleZ(int newZ) {
-		game.paddle.x = ((int) (newZ / 7)) * 0.1f;
+		game.paddle.x = ((int) (newZ / 5)) * 0.1f;
 	}
 
 	public void updatePaddleY(int newY) {
-		game.paddle.y = (float) ((newY / 7) * 0.1f);
+		game.paddle.y = (float) ((newY / 4) * 0.1f);
 	}
 
 	public void updateOtherPaddle(float newZ, float newY) {

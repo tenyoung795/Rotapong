@@ -26,7 +26,7 @@ public class Ball implements Shape {
 	private int[] mTexturePointer;
 	private int[] mCropWorkspace;
 	public float x, y, z, xSpeed, ySpeed;
-	public float zSpeed = 0.0625f;
+	public float zSpeed = 0.015625f;
 	public boolean zDir, yDir, xDir = false;
 	
 	private static final FloatBuffer VERTICES = Buffers.wrap(new float[] {
