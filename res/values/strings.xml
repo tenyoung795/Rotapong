@@ -15,5 +15,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_test_server">TestServerActivity</string>
     <string name="title_activity_test_client">TestClientActivity</string>
+    <string name="play_computer">Play against computer</string>
 
 </resources>

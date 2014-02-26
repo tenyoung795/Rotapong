@@ -136,6 +136,7 @@ public class MainActivity extends Activity implements ChannelListener,
 
 			@Override
 			public void onClick(View v) {
+				startGame();
 			}
 
 		});
@@ -320,4 +321,10 @@ public class MainActivity extends Activity implements ChannelListener,
 				.putExtra(GameActivity.IS_SERVER, info.isGroupOwner)
 		);
 	}
+
+	private void startGame() {
+		Log.d(TAG, "Started game!");
+		startActivity(new Intent(this, GameActivity.class));
+	}
+
 }

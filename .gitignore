@@ -6,3 +6,4 @@ local.properties
 .loadpath
 .project
 .metadata
+*.swp

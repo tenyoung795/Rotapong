@@ -57,8 +57,13 @@ public class GameActivity extends Activity implements SensorEventListener{
 		
 		Intent intent = getIntent();
 		InetAddress address = (InetAddress)intent.getSerializableExtra(SERVER);
-		boolean isServer = intent.getBooleanExtra(IS_SERVER, false);
-		mGame = new Game(address, isServer);
+		if (address == null)
+			mGame = new Game();
+		else
+		{
+			boolean isServer = intent.getBooleanExtra(IS_SERVER, false);
+			mGame = new Game(address, isServer);
+		}
 		renderer = new GameRenderer(this, mGame);
 		view.setRenderer(renderer);
 		
