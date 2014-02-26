@@ -70,7 +70,7 @@ public class MainActivity extends Activity implements ChannelListener,
 	private ListView listOfPlayersView;
 	private TextView statusView;
 	private ProgressBar progressBar;
-	private Button yesButton, noButton, cancelButton;
+	private Button computerButton, yesButton, noButton, cancelButton;
 	private boolean waitingForReply;
 	private WifiP2pConfig config;
 	private final ActionListener channelListener = new ActionListener() {
@@ -130,6 +130,15 @@ public class MainActivity extends Activity implements ChannelListener,
 
 		progressBar = (ProgressBar) findViewById(R.id.progress_bar);
 		progressBar.setVisibility(View.VISIBLE);
+
+		computerButton = (Button) findViewById(R.id.play_computer);
+		computerButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+			}
+
+		});
 
 		yesButton = (Button) findViewById(R.id.yes);
 		yesButton.setOnClickListener(new OnClickListener() {
