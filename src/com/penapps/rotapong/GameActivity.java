@@ -26,12 +26,10 @@ public class GameActivity extends Activity implements SensorEventListener{
 	public static final String IS_SERVER = "com.penapps.rotapong.IS_SERVER";
 
 	private SensorManager mSensorManager;
-	private Sensor mAccelerometer, mMagneticField;
-	// float[3]
-	private float[] mGravity, mGeomagnetic, mOrientation;
-	
-	private static final int ROTATION_SIZE = 9;
-	private float[] mTempRotation, mRotation;
+	private Sensor mRotationVector;
+
+	private float[] mOrientation = new float[3];
+	private float[] mTempRotation = new float[3 * 3], mRotation = new float[3 * 3];
 	
 	private Button calibrate;
 	private boolean calibrated = true;
@@ -72,17 +70,7 @@ public class GameActivity extends Activity implements SensorEventListener{
 		addContentView(calibrate, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 		
 		mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
-		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-		mMagneticField = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-		
-		mGravity = new float[3];
-		mGeomagnetic = new float[3];
-		// To mark the arrays as uninitialized
-		mGravity[0] = mGeomagnetic[0] = Float.NaN;
-		mOrientation = new float[3];
-		
-		mTempRotation = new float[ROTATION_SIZE];
-		mRotation = new float[ROTATION_SIZE];
+		mRotationVector = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
 		
 		calibrate.setOnClickListener(new Button.OnClickListener() {
 			
@@ -98,8 +86,7 @@ public class GameActivity extends Activity implements SensorEventListener{
 	protected void onResume() {
         super.onResume();
         view.onResume();
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        mSensorManager.registerListener(this, mMagneticField, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mRotationVector, SensorManager.SENSOR_DELAY_GAME);
     }
 	
 	@Override
@@ -127,50 +114,32 @@ public class GameActivity extends Activity implements SensorEventListener{
 			return;
 		}
 		
-		float[] array = null;
-		switch (event.sensor.getType())
-		{
-		case Sensor.TYPE_ACCELEROMETER:
-			array = mGravity;
-			break;
-		case Sensor.TYPE_MAGNETIC_FIELD:
-			array = mGeomagnetic;
-			break;
-        default:
-        	return;
+		SensorManager.getRotationMatrixFromVector(mTempRotation, event.values);
+		// Warp coordinate system to ease conversion to game world
+		SensorManager.remapCoordinateSystem(mTempRotation, SensorManager.AXIS_Y, SensorManager.AXIS_Z, mRotation);
+		SensorManager.getOrientation(mRotation, mOrientation);
+		//String msg = "Orientation vector in degrees: z: " + (int)Math.toDegrees(mOrientation[0] - calibrationZ)
+		//	+ " x: " + (int)Math.toDegrees(mOrientation[1])
+		//	+ " y: " + (int)Math.toDegrees(mOrientation[2]);
+		//mTextView.setText(msg);
+		//Log.i(TAG, msg);
+		
+		if (!calibrated){
+			calibrationZ = mOrientation[0];
+			calibrated = true;
 		}
-		System.arraycopy(event.values, 0, array, 0, 3);
-		if (!(Float.isNaN(mGravity[0]) || Float.isNaN(mGeomagnetic[0]))
-			&& SensorManager.getRotationMatrix(mTempRotation, null, mGravity, mGeomagnetic))
-        {	
-			// Warp coordinate system to ease conversion to game world
-			SensorManager.remapCoordinateSystem(mTempRotation, SensorManager.AXIS_Y, SensorManager.AXIS_Z, mRotation);
-			SensorManager.getOrientation(mRotation, mOrientation);
-			//String msg = "Orientation vector in degrees: z: " + (int)Math.toDegrees(mOrientation[0] - calibrationZ)
-			//	+ " x: " + (int)Math.toDegrees(mOrientation[1])
-			//	+ " y: " + (int)Math.toDegrees(mOrientation[2]);
-			//mTextView.setText(msg);
-			//Log.i(TAG, msg);
-			
-			if (!calibrated){
-				calibrationZ = mOrientation[0];
-				calibrated = true;
-			}
-			
-			int newZ = (int)Math.toDegrees(mOrientation[0] - calibrationZ);
-			int newY = (int)Math.toDegrees((mOrientation[2]));
-			
-			//Log.d(TAG, newZ + " " + newY);
-			
-			if (Math.abs(prevZ - newZ) > 0){
-				mGame.updatePaddleZ(newZ);
-			}
-			if (Math.abs(prevY - newY) > 0){
-				mGame.updatePaddleY(newY);
-			}
-        }
 		
+		int newZ = (int)Math.toDegrees(mOrientation[0] - calibrationZ);
+		int newY = (int)Math.toDegrees((mOrientation[2]));
 		
+		//Log.d(TAG, newZ + " " + newY);
+		
+		if (Math.abs(prevZ - newZ) > 0){
+			mGame.updatePaddleZ(newZ);
+		}
+		if (Math.abs(prevY - newY) > 0){
+			mGame.updatePaddleY(newY);
+		}
 	}
 
 }
