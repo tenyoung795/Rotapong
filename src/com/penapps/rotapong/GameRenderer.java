@@ -30,20 +30,21 @@ public class GameRenderer implements Renderer {
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		mGame.step();
-	    
+		
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		gl.glLoadIdentity();
+		gl.glPushMatrix();
+        gl.glTranslatef(0.0f, 0.0f, -5.0f);
+		gl.glScalef(0.75f, 0.75f, 0.75f);
+		mGame.paddle.draw(gl);
+
+		gl.glPopMatrix();
+        gl.glTranslatef(-mGame.paddle.x, -mGame.paddle.y, 0.0f);
 
 		gl.glPushMatrix();
 		gl.glTranslatef(mGame.otherPaddle.x, mGame.otherPaddle.y, -10.0f);
 		gl.glScalef(0.75f, 0.75f, 0.75f);
 		mGame.otherPaddle.draw(gl);
-		gl.glPopMatrix();
-
-		gl.glPushMatrix();
-		gl.glTranslatef(mGame.paddle.x, mGame.paddle.y, -5.0f);
-		gl.glScalef(0.75f, 0.75f, 0.75f);
-		mGame.paddle.draw(gl);
 		gl.glPopMatrix();
 
 		gl.glPushMatrix();
