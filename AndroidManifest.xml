@@ -24,12 +24,12 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Holo"
-		android:name="com.penapps.rotapong.RotapongApplication" >
+        android:name="com.penapps.rotapong.RotapongApplication" >
         <activity
             android:name="com.penapps.rotapong.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name" >
-			<intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -42,7 +42,7 @@
         <activity
             android:name="com.penapps.rotapong.GameActivity"
             android:theme="@android:style/Theme.NoTitleBar"
-			android:screenOrientation="portrait"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_game" >
         </activity>
         <activity
